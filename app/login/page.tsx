@@ -1,12 +1,15 @@
+// app/login/page.tsx
 'use client'
 
-import { useState } from 'react'
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { createClient } from '@/utils/supabase/client'
 
-export default function LoginPage() {
+// Компонент, который использует useSearchParams
+function LoginContent() {
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/'
   const supabase = createClient()
@@ -51,7 +54,6 @@ export default function LoginPage() {
   const handleVKLogin = async () => {
     setLoading(true)
     setError(null)
-
     try {
       window.location.href = `/api/auth/vk?redirect=${redirect}`
     } catch (err: any) {
@@ -84,7 +86,6 @@ export default function LoginPage() {
               required
             />
           </div>
-
           <div>
             <label htmlFor="password" className="block text-sm font-medium">
               Пароль
@@ -97,7 +98,6 @@ export default function LoginPage() {
               required
             />
           </div>
-
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? 'Подождите...' : isSignUp ? 'Зарегистрироваться' : 'Войти'}
           </Button>
@@ -128,5 +128,14 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+// Главный экспорт с Suspense
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Загрузка страницы входа...</div>}>
+      <LoginContent />
+    </Suspense>
   )
 }
